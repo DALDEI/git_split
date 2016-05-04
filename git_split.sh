@@ -12,7 +12,7 @@ SRC_BRANCH="$2"
 SRC_DIR="$3"
 OUTPUT_REPO="$4"
 TMP_DIR=$(mktemp -d /tmp/git_split.XXXXXX)
-SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SELF_DIR=$(pwd)
 
 EXIT_CODE_OUTPUT_REPO_NOT_DIRECTORY=10
 EXIT_CODE_OUTPUT_DIR_NOT_A_REPO=11
@@ -34,7 +34,7 @@ BARE_REPO="$TMP_DIR/bare";
 
 # function to cleanup with a message.
 function cleanup() {
-        rm -rf "$TMP_DIR"
+    rm -rf "$TMP_DIR"
 }
 
 # show the usage of this application
@@ -123,15 +123,15 @@ if [[ ! -e "$REPO_BASE/$SRC_DIR" ]] || [[ ! -d "$REPO_BASE/$SRC_DIR" ]]; then
 fi 
 
 # turn this repo into just the changes for the oldPath
-git filter-branch --prune-empty --subdirectory-filter "$SRC_DIR" "$SRC_BRANCH"
+git filter-branch --prune-empty --subdirectory-filter "$SRC_DIR" --tag-name-filter cat -- --all 
 
 # output is a working tree repo, pull changes in from the bare repo.
 if [[ -e "$OUTPUT_REPO/.git" ]]; then
 	# create the internal bare repo.
-	git init --bare --shared=group "$BARE_REPO"
+	git init --bare --shared=group "$BARE_REPO" 
 
 	# push those changes to our bare repo.
-	git push "$BARE_REPO" "$SRC_BRANCH"
+	git push "$BARE_REPO" "$SRC_BRANCH" --follow-tags
 
 	cd "$OUTPUT_REPO"
 
@@ -140,6 +140,12 @@ if [[ -e "$OUTPUT_REPO/.git" ]]; then
 
 	git pull "$BARE_REPO" "$SRC_BRANCH"
 	checkErrorExit "Failed to pull into '$OUTPUT_REPO' from '$BARE_REPO'." $EXIT_CODE_FAILED_TO_PULL_INTO_OUTPUT_REPO
+
+	git fetch --all 
+	checkErrorExit "Failed to fetch all  into '$OUTPUT_REPO' from '$BARE_REPO'." $EXIT_CODE_FAILED_TO_PULL_INTO_OUTPUT_REPO
+
+	git fetch --tags "$BARE_REPO"
+	checkErrorExit "Failed to fetch tags  into '$OUTPUT_REPO' from '$BARE_REPO'." $EXIT_CODE_FAILED_TO_PULL_INTO_OUTPUT_REPO
 
 # output is a bare repo. we can just push.
 else

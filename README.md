@@ -1,15 +1,21 @@
-OS    | Build Status
-------|-----------
-Linux | [![Build Status](https://travis-ci.org/vangorra/git_split.svg?branch=master)](https://travis-ci.org/vangorra/git_split)
-OSX   | [![Build Status](https://travis-ci.org/vangorra/git_split.svg?branch=master)](https://travis-ci.org/vangorra/git_split)
-Windows | [![Build status](https://ci.appveyor.com/api/projects/status/0yt4c98hjpw02i61?svg=true)](https://ci.appveyor.com/project/vangorra/git-split)
-
+# License
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+# Origin
+This script originates from [vangorra/git_split)(https://github.com/vangorra/git_split)
 
 # git_split.sh
 
 This script will take an existing directory in your git repository and turn that directory into an independent repository of its own. Along the way, it will copy over the entire change history for the directory you provided.
 Inspiration for this script came from https://help.github.com/articles/splitting-a-subfolder-out-into-a-new-repository/. This script really just automates the process. Let me know if you find this script useful. I'm also totally open contributors.
+
+# improvements
+The script has been modified to attempt to preserve tags and branchs.
+Tags that affected files in the split directory are preserved.
+Branch merge commits from the source are preseved, but are unnamed unless they also have a tag.
+( Any help with preserving branch names appreciated) 
+Looking at the history with gitk shows the branch lines but no branch names - similar to deleting a branch.
+
 
 ## Installation
 Drop it into a appropriate bin directory. Or run it locally.
